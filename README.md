@@ -1,2 +1,2 @@
 # ipxe
-Projet iPXE UEFI
+Projet PXE UEFI avec iPXE

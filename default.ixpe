@@ -1,0 +1,29 @@
+#!ipxe
+cpuid --ext 29 && set arch x86_64 || set arch i386
+goto get_console
+:console_set
+colour --rgb 0xec8908 1 ||
+colour --rgb 0xec8908 2 ||
+colour --rgb 0xec8908 4 ||
+cpair --foreground 7 --background 2 2 ||
+goto MENU
+:alt_console
+cpair --background 0 1 ||
+cpair --background 1 2 ||
+goto MENU
+:get_console
+console --x 800 --y 600
+console --picture && goto console_set || goto alt_console
+:MENU
+menu
+colour --rgb 0xff0000 0 ||
+cpair --foreground 1 1 ||
+cpair --foreground 0 3 ||
+cpair --foreground 4 4 ||
+item os.exemple Exemple
+choose --default pxe.local target && goto ${target}
+
+:os.exemple
+kernel tftp://192.168.1.253/exemple
+initrd tftp://192.168.1.253/exemple
+boot || goto MENU

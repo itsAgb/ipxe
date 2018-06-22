@@ -1,0 +1,87 @@
+#!ipxe
+cpuid --ext 29 && set arch x86_64 || set arch i386
+goto get_console
+:console_set
+colour --rgb 0xec8908 1 ||
+colour --rgb 0xec8908 2 ||
+colour --rgb 0xec8908 4 ||
+cpair --foreground 7 --background 2 2 ||
+goto MENU
+:alt_console
+cpair --background 0 1 ||
+cpair --background 1 2 ||
+goto MENU
+:get_console
+console --x 800 --y 600
+console --picture tftp://192.168.1.253/mediapc.png  && goto console_set || goto alt_console
+:MENU
+menu
+colour --rgb 0xff0000 0 ||
+cpair --foreground 1 1 ||
+cpair --foreground 0 3 ||
+cpair --foreground 4 4 ||
+item --gap
+item --gap
+item --gap ******** WINDOWS ********
+item --gap -- -------------------------------------
+
+item os.win10x64 Windows 10 64bits
+item os.win81x64 Windows 8.1 64bits
+item os.win7homesp1x64 Windows 7 Home SP1 64bits
+item os.win7prosp1x64 Windows 7 Pro SP1 64bits
+item --gap
+item --gap ******** LIVE CD ********
+item --gap -- ------------------------------------
+item os.win7x64live Windows 7 Live CD
+item os.ubuntu1804 Ubuntu 18.04
+item os.ubcd Ultimate Boot CD (a venir)
+choose --default pxe.local target && goto ${target}
+
+:os.win10x64
+kernel tftp://192.168.1.253/images/winPEx64/wimboot
+initrd tftp://192.168.1.253/images/winPEx64/scripts/win10x64/install.bat
+initrd tftp://192.168.1.253/images/winPEx64/scripts/win10x64/winpeshl.ini
+initrd tftp://192.168.1.253/images/winPEx64/media/Boot/BCD
+initrd tftp://192.168.1.253/images/winPEx64/media/Boot/boot.sdi
+initrd -n boot.wim tftp://192.168.1.253/images/winPEx64/media/sources/boot.wim
+boot || goto MENU
+
+:os.win81x64
+kernel tftp://192.168.1.253/images/winPEx64/wimboot
+initrd tftp://192.168.1.253/images/winPEx64/scripts/win81x64/install.bat
+initrd tftp://192.168.1.253/images/winPEx64/scripts/win81x64/winpeshl.ini
+initrd tftp://192.168.1.253/images/winPEx64/media/Boot/BCD
+initrd tftp://192.168.1.253/images/winPEx64/media/Boot/boot.sdi
+initrd -n boot.wim tftp://192.168.1.253/images/winPEx64/media/sources/boot.wim
+boot || goto MENU
+
+:os.win7homesp1x64
+kernel tftp://192.168.1.253/images/winPEx64/wimboot
+initrd tftp://192.168.1.253/images/winPEx64/scripts/win7homesp1x64/install.bat
+initrd tftp://192.168.1.253/images/winPEx64/scripts/win7homesp1x64/winpeshl.ini
+initrd tftp://192.168.1.253/images/winPEx64/media/Boot/BCD
+initrd tftp://192.168.1.253/images/winPEx64/media/Boot/boot.sdi
+initrd -n boot.wim tftp://192.168.1.253/images/winPEx64/media/sources/boot.wim
+boot || goto MENU
+
+:os.win7prosp1x64
+kernel tftp://192.168.1.253/images/winPEx64/wimboot
+initrd tftp://192.168.1.253/images/winPEx64/scripts/win7prosp1x64/install.bat
+initrd tftp://192.168.1.253/images/winPEx64/scripts/win7prosp1x64/winpeshl.ini
+initrd tftp://192.168.1.253/images/winPEx64/media/Boot/BCD
+initrd tftp://192.168.1.253/images/winPEx64/media/Boot/boot.sdi
+initrd -n boot.wim tftp://192.168.1.253/images/winPEx64/media/sources/boot.wim
+boot || goto MENU
+
+:os.win7x64live
+kernel tftp://192.168.1.253/images/winPEx64/wimboot
+initrd tftp://192.168.1.253/images/win7x64live/boot/bcd
+initrd tftp://192.168.1.253/images/win7x64live/boot/boot.sdi
+initrd -n boot.wim tftp://192.168.1.253/images/winPEx64/win7x64live/sources/boot.wim
+boot || goto MENU
+
+:os.ubuntu1804
+kernel tftp://192.168.1.253/images/ubuntu1804/casper/vmlinuz.efi
+initrd tftp://192.168.1.253/images/ubuntu1804/casper/initrd.lz
+imgargs vmlinuz.efi initrd=initrd.lz root=/dev/nfs boot=casper netboot=nfs nfsroot=192.168.1.253:/srv/images/ubuntu1804/ ip=dhcp splash quiet --
+boot || goto MENU
